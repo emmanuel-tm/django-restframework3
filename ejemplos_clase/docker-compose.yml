@@ -39,7 +39,7 @@ services:
     # Imágen a utilizar:
     image: modulo_4
     # Nombre del container:
-    container_name: modulo_4b
+    container_name: modulo_4c
     # Comportamiento ante fallos y al iniciar el sistema:
     restart: always
     # Carpetas enlazadas:

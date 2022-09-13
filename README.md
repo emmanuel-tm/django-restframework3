@@ -5,7 +5,7 @@ Web: [Inove](http://inove.com.ar)
 
 ---
 
-# Django - REST FRAMEWORK 2
+# Django - REST FRAMEWORK 3
 En este repositorio encontrarán los siguientes archivos:
 
 __Ejemplos que el profesor mostrará en clase__\

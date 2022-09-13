@@ -79,7 +79,7 @@ class GetComicAPIView(ListAPIView):
     serializer_class = ComicSerializer
 
     # Equivale a --> permission_classes = (IsAdminUser & IsAuthenticated,)
-    permission_classes = (IsAdminUser, IsAuthenticated)
+    permission_classes = (IsAdminUser | IsAuthenticated,)
     # Descomentar y mostrar en clases para ver las diferencias entre 
     # estos tipos de Authentication. Mostrar en Postman.
 
@@ -130,7 +130,7 @@ class DestroyComicAPIView(DestroyAPIView):
     '''
     queryset = Comic.objects.all()
     serializer_class = ComicSerializer
-    permission_classes = (IsAuthenticated & IsAdminUser,)
+    permission_classes = (IsAuthenticated | IsAdminUser,)
 
 
 # NOTE: APIs MIXTAS:
@@ -141,7 +141,7 @@ class GetOneComicAPIView(ListAPIView):
     Esta vista de API nos devuelve un comic en particular de la base de datos.
     '''
     serializer_class = ComicSerializer
-    permission_classes = (IsAuthenticated & IsAdminUser,)
+    permission_classes = (IsAuthenticated | IsAdminUser,)
 
     def get_queryset(self):
         '''
@@ -210,82 +210,33 @@ class GetOneComicAPIView(ListAPIView):
 #     ```
 #     '''
 #     parser_classes = (JSONParser,)
-#     # renderer_classes = [JSONRenderer]
+#     renderer_classes = [JSONRenderer]
 #     authentication_classes = ()
 #     permission_classes = ()
 
-#     # NOTE: Agregamos todo esto para personalizar
-#     # el body de la request y los responses
-#     # que muestra como ejemplo el Swagger para
-#     # esta view.
-
-#     # NOTE 2: Descomentar dicho decorador para
-#     # mostrarlo en clase.
-
-#     # @swagger_auto_schema(
-#     #     request_body=openapi.Schema(
-#     #         type=openapi.TYPE_OBJECT, 
-#     #         properties={
-#     #             'username': openapi.Schema(
-#     #                 type=openapi.TYPE_STRING,
-#     #                 description='username'
-#     #             ),
-#     #             'password': openapi.Schema(
-#     #                 type=openapi.TYPE_STRING,
-#     #                 format=openapi.FORMAT_PASSWORD,
-#     #                 description='password'
-#     #             ),
-#     #         }
-#     #     ),
-#     #     responses= {
-#     #         "201": openapi.Response(
-#     #             description='Return Token',
-#     #             examples={
-#     #                 "application/json": {
-#     #                     "user_id": 1,
-#     #                     "username": "username",
-#     #                     "first_name": "first_name",
-#     #                     "last_name": "last_name",
-#     #                     "email": "info@inove.com.ar",
-#     #                     "is_active": True,
-#     #                     "token": "92937874f377a1ea17f7637ee07208622e5cb5e6"
-#     #                 }
-#     #             }
-#     #         ),
-#     #        "400": openapi.Response(
-#     #             description='Credenciales Inválidas',
-#     #             examples={
-#     #                 "application/json": {
-#     #                     'response': 'Error',
-#     #                     'error_message': 'Credenciales invalidas'
-#     #                 }
-#     #             }
-#     #         ),
-#     #     }
-#     # )
 #     def post(self, request):
 #         user_data = {}
 #         try:
-#             # Obtenemos los datos del request:
+#             Obtenemos los datos del request:
 #             username = request.data.get('username')
 #             password = request.data.get('password')
-#             # Obtenemos el objeto del modelo user, a partir del usuario y contraseña,
-#             # NOTE: es importante el uso de este método, porque aplica el hash del password!
+#             Obtenemos el objeto del modelo user, a partir del usuario y contraseña,
+#             NOTE: es importante el uso de este método, porque aplica el hash del password!
 #             account = authenticate(username=username, password=password)
 
 #             if account:
-#                 # Si el usuario existe y sus credenciales son validas,
-#                 # tratamos de obtener el TOKEN:
+#                 Si el usuario existe y sus credenciales son validas,
+#                 tratamos de obtener el TOKEN:
 #                 try:
 #                     token = Token.objects.get(user=account)
 #                 except Token.DoesNotExist:
-#                     # Si el TOKEN del usuario no existe, lo creamos automáticamente:
+#                     Si el TOKEN del usuario no existe, lo creamos automáticamente:
 #                     token = Token.objects.create(user=account)
 
-#                 # El try except se puede reemplazar por lo siguiente:
-#                 # token, created = Token.objects.get_or_create(user=account)
+#                 El try except se puede reemplazar por lo siguiente:
+#                 token, created = Token.objects.get_or_create(user=account)
                 
-#                 # Con todos estos datos, construimos un JSON de respuesta:
+#                 Con todos estos datos, construimos un JSON de respuesta:
 #                 user_data['user_id'] = account.pk
 #                 user_data['username'] = username
 #                 user_data['first_name'] = account.first_name
@@ -293,12 +244,12 @@ class GetOneComicAPIView(ListAPIView):
 #                 user_data['email']=account.email
 #                 user_data['is_active'] = account.is_active
 #                 user_data['token'] = token.key                
-#                 # Devolvemos la respuesta personalizada
+#                 Devolvemos la respuesta personalizada
 #                 return Response(
 #                     data=user_data, status=status.HTTP_201_CREATED
 #                 )
 #             else:
-#                 # Si las credenciales son invalidas, devolvemos algun mensaje de error:
+#                 Si las credenciales son invalidas, devolvemos algun mensaje de error:
 #                 user_data['response'] = 'Error'
 #                 user_data['error_message'] = 'Credenciales invalidas'
 #                 return Response(
@@ -306,7 +257,7 @@ class GetOneComicAPIView(ListAPIView):
 #                 )
 
 #         except Exception as error:
-#             # Si aparece alguna excepción, devolvemos un mensaje de error
+#             Si aparece alguna excepción, devolvemos un mensaje de error
 #             user_data['response'] = 'Error'
 #             user_data['error_message'] = error
 #             return Response(
@@ -340,6 +291,54 @@ class LoginUserAPIView(APIView):
     authentication_classes = ()
     permission_classes = ()
 
+    # NOTE: Agregamos todo esto para personalizar
+    # el body de la request y los responses
+    # que muestra como ejemplo el Swagger para
+    # esta view.
+
+    # NOTE 2: Descomentar dicho decorador para
+    # mostrarlo en clase.
+    @swagger_auto_schema(
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT, 
+            properties={
+                'username': openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    description='username'
+                ),
+                'password': openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    format=openapi.FORMAT_PASSWORD,
+                    description='password'
+                ),
+            }
+        ),
+        responses= {
+            "201": openapi.Response(
+                description='Token: api-key',
+                examples={
+                    "application/json": {
+                        "user_id": 1,
+                        "username": "username",
+                        "first_name": "first_name",
+                        "last_name": "last_name",
+                        "email": "info@inove.com.ar",
+                        "is_active": True,
+                        "token": "92937874f377a1ea17f7637ee07208622e5cb5e6"
+                    }
+                }
+            ),
+           "401": openapi.Response(
+                description='Credenciales Inválidas',
+                examples={
+                    "application/json": {
+                        'response': 'Error',
+                        'error_message': 'Credenciales invalidas'
+                    }
+                }
+            ),
+        }
+    )
     def post(self, request):
         usertokenserializer = UserTokenSerializer(data=request.data)
         if usertokenserializer.is_valid():
@@ -356,11 +355,54 @@ class LoginUserAPIView(APIView):
                 status=status.HTTP_200_OK
             )
 
+        # En caso de no haber pasado las validaciones retorno los errores
+        # devuelto por el serializador.
         return Response(
             data=usertokenserializer.errors,
             status=status.HTTP_400_BAD_REQUEST
         )
 
 
-# TODO: Agregar las vistas genericas que permitan realizar un CRUD del modelo de wish-list.
-# TODO: Crear una vista generica modificada para traer todos los comics que tiene un usuario.
+# TODO: Agregar las vistas genericas(vistas de API basadas en clases) 
+# que permitan realizar un CRUD del modelo de wish-list.
+# TODO: Crear una vista generica modificada(vistas de API basadas en clases)
+# para traer todos los comics que tiene un usuario.
+class GetWishListAPIView(ListAPIView):
+    __doc__ = f'''{mensaje_headder}
+    `[METODO GET]`
+    Esta vista de API nos devuelve una lista de todos los comics 
+    presentes en la base de datos.
+    '''
+    queryset = WishList.objects.all()
+    serializer_class = WishListSerializer
+    permission_classes = (IsAuthenticated, IsAdminUser)
+
+
+class GetUserFavsAPIView(ListAPIView):
+    '''
+    ```
+    Vista de API personalizada para recibir peticiones de tipo GET.
+    Retorna la lista de comics favoritos de un usuario.
+    ```
+    '''
+    serializer_class = ComicSerializer
+    permission_classes = (IsAuthenticated,)
+
+    def get_queryset(self):
+        wish_list = WishList.objects.filter(
+            user__username=self.kwargs.get('username'),
+            favorite=True,
+        ).values_list('comic', flat=True)
+        return self.serializer_class.Meta.model.objects.filter(
+            pk__in=wish_list
+        )
+
+
+class PostWishListAPIView(CreateAPIView):
+    __doc__ = f'''{mensaje_headder}
+    `[METODO POST]`
+    Esta vista de API nos permite hacer un insert en la base de datos.
+    '''
+    queryset = WishList.objects.all()
+    serializer_class = WishListSerializer
+    permission_classes = []

@@ -1,8 +1,9 @@
-from django.urls import path
-from e_commerce.api.marvel_api_views import *
+from django.urls import path, include
 
+from e_commerce.api.marvel_api_views import *
 # Importamos las API_VIEWS:
 from e_commerce.api.api_views import *
+
 
 urlpatterns = [
     # User APIs:
@@ -21,5 +22,11 @@ urlpatterns = [
     path('comics/<int:pk>/delete', DestroyComicAPIView.as_view()),
 
     # TODO: Wish-list API View
+    path('wish/get', GetWishListAPIView.as_view()),
+    path('wish/post', PostWishListAPIView.as_view()),
+    path('favs/<str:username>/get', GetUserFavsAPIView.as_view()),
 
+    # User API Viewsets:
+    path('api/', include('e_commerce.api.routers')),
+    path('api/', include('e_commerce.api.routers')),
 ]
